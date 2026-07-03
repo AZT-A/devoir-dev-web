@@ -1,0 +1,215 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.mk { font-family: var(--font-sans); padding: 1rem 0; }
+.screen-label { font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+.screens { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 2rem; }
+.screen-desktop { flex: 1; min-width: 300px; }
+.screen-mobile { width: 200px; flex-shrink: 0; }
+.phone-shell { background: #111118; border-radius: 24px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.1); }
+.desktop-shell { background: #0f0f13; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+.dk-header { background: #111118; padding: 16px 18px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; }
+.dk-title { font-size: 20px; font-weight: 700; color: #e8e8f0; letter-spacing: -0.3px; }
+.dk-title span { color: #7c71ff; }
+.dk-counter { font-size: 12px; color: #8888a8; margin-top: 2px; }
+.dk-body { padding: 14px; background: #0f0f13; }
+.dk-input { background: #1a1a24; border-radius: 10px; padding: 12px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.06); }
+.dk-row { display: flex; gap: 8px; }
+.fake-field { flex: 1; background: #0f0f13; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; height: 34px; display: flex; align-items: center; padding: 0 10px; }
+.fake-field span { font-size: 12px; color: #8888a8; }
+.fake-select { width: 80px; background: #0f0f13; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; height: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; }
+.fake-select span { font-size: 11px; color: #e8e8f0; }
+.dk-add-btn { background: #7c71ff; color: white; border-radius: 7px; height: 34px; padding: 0 12px; font-size: 12px; font-weight: 600; display: flex; align-items: center; white-space: nowrap; }
+.dk-filters { display: flex; gap: 6px; margin-bottom: 12px; }
+.f-btn { font-size: 11px; padding: 4px 11px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); color: #8888a8; }
+.f-btn.on { background: rgba(124,113,255,0.15); border-color: #7c71ff; color: #a49fff; }
+.dk-task { background: #1a1a24; border-radius: 9px; padding: 10px 12px; margin-bottom: 7px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 9px; }
+.dk-task.done { opacity: 0.45; }
+.chk { width: 17px; height: 17px; border-radius: 5px; border: 1.5px solid rgba(255,255,255,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.chk.on { background: #4dca8f; border-color: #4dca8f; font-size: 10px; color: white; }
+.t-text { flex: 1; }
+.t-title { font-size: 12px; color: #e8e8f0; font-weight: 500; }
+.t-title.done { text-decoration: line-through; color: #8888a8; }
+.badge { font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 8px; margin-top: 3px; display: inline-block; }
+.b-h { background: rgba(255,94,94,0.15); color: #ff8080; }
+.b-m { background: rgba(255,179,71,0.15); color: #ffc06a; }
+.b-l { background: rgba(77,202,143,0.15); color: #4dca8f; }
+.t-del { font-size: 12px; color: #8888a8; }
+.specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 8px; }
+.spec-card { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 14px 16px; border: 0.5px solid var(--color-border-tertiary); }
+.spec-title { font-size: 12px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 10px; display: flex; align-items: center; gap: 7px; }
+.spec-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.spec-row:last-child { border-bottom: none; }
+.sk { font-size: 11px; color: var(--color-text-secondary); }
+.sv { font-size: 11px; color: var(--color-text-primary); font-weight: 500; display: flex; align-items: center; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.comp-pill { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 6px; padding: 5px 8px; }
+.cp-name { font-size: 11px; font-weight: 500; color: var(--color-text-primary); }
+.cp-desc { font-size: 10px; color: var(--color-text-secondary); margin-top: 1px; }
+.flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.flow-step { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 6px; padding: 4px 8px; font-size: 10px; color: var(--color-text-primary); display: flex; align-items: center; gap: 4px; }
+.flow-arrow { font-size: 12px; color: var(--color-text-secondary); }
+</style>
+
+<div class="mk">
+  <h2 class="sr-only">Maquette TaskFlow — application de gestion de tâches. Écran desktop avec formulaire, filtres et liste de tâches. Version mobile et spécifications de design.</h2>
+
+  <div class="screens">
+    <div class="screen-desktop">
+      <p class="screen-label"><i class="ti ti-device-desktop" aria-hidden="true"></i> Vue principale — desktop</p>
+      <div class="desktop-shell">
+        <div class="dk-header">
+          <div>
+            <div class="dk-title">Task<span>Flow</span></div>
+            <div class="dk-counter">3 tâches restantes</div>
+          </div>
+          <div style="font-size:10px; color:#8888a8; text-align:right; line-height:1.6;">React + PHP<br>MySQL</div>
+        </div>
+        <div class="dk-body">
+          <div class="dk-input">
+            <div class="dk-row">
+              <div class="fake-field" style="flex:1;"><span>Nouvelle tâche...</span></div>
+              <div class="fake-select"><span>Haute</span><i class="ti ti-chevron-down" style="font-size:10px;color:#8888a8;" aria-hidden="true"></i></div>
+              <div class="dk-add-btn"><i class="ti ti-plus" aria-hidden="true"></i>&nbsp;Ajouter</div>
+            </div>
+          </div>
+          <div class="dk-filters">
+            <div class="f-btn on">Toutes (4)</div>
+            <div class="f-btn">En cours (3)</div>
+            <div class="f-btn">Terminées (1)</div>
+          </div>
+          <div class="dk-task">
+            <div class="chk"></div>
+            <div class="t-text">
+              <div class="t-title">Finir la maquette du projet</div>
+              <span class="badge b-h">Haute priorité</span>
+            </div>
+            <i class="ti ti-trash t-del" aria-hidden="true"></i>
+          </div>
+          <div class="dk-task">
+            <div class="chk"></div>
+            <div class="t-text">
+              <div class="t-title">Relire le cahier des charges</div>
+              <span class="badge b-m">Priorité moyenne</span>
+            </div>
+            <i class="ti ti-trash t-del" aria-hidden="true"></i>
+          </div>
+          <div class="dk-task">
+            <div class="chk"></div>
+            <div class="t-text">
+              <div class="t-title">Préparer le script oral</div>
+              <span class="badge b-l">Basse priorité</span>
+            </div>
+            <i class="ti ti-trash t-del" aria-hidden="true"></i>
+          </div>
+          <div class="dk-task done">
+            <div class="chk on">✓</div>
+            <div class="t-text">
+              <div class="t-title done">Créer la base de données</div>
+              <span class="badge b-l">Basse priorité</span>
+            </div>
+            <i class="ti ti-trash t-del" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-mobile">
+      <p class="screen-label"><i class="ti ti-device-mobile" aria-hidden="true"></i> Mobile</p>
+      <div class="phone-shell">
+        <div class="dk-header" style="padding:12px 14px 10px;">
+          <div>
+            <div class="dk-title" style="font-size:16px;">Task<span>Flow</span></div>
+            <div class="dk-counter" style="font-size:10px;">3 tâches restantes</div>
+          </div>
+        </div>
+        <div class="dk-body" style="padding:10px;">
+          <div class="dk-input" style="padding:9px; margin-bottom:9px;">
+            <div class="fake-field" style="margin-bottom:6px; height:30px;"><span style="font-size:11px;">Nouvelle tâche...</span></div>
+            <div style="display:flex;gap:5px;">
+              <div class="fake-select" style="flex:1;height:28px;"><span style="font-size:10px;">Haute</span><i class="ti ti-chevron-down" style="font-size:9px;" aria-hidden="true"></i></div>
+              <div class="dk-add-btn" style="height:28px;font-size:10px;padding:0 9px;"><i class="ti ti-plus" aria-hidden="true"></i></div>
+            </div>
+          </div>
+          <div class="dk-filters" style="gap:4px;margin-bottom:9px;">
+            <div class="f-btn on" style="font-size:9px;padding:3px 7px;">Toutes</div>
+            <div class="f-btn" style="font-size:9px;padding:3px 7px;">En cours</div>
+            <div class="f-btn" style="font-size:9px;padding:3px 7px;">Terminées</div>
+          </div>
+          <div class="dk-task" style="padding:8px 9px;margin-bottom:5px;">
+            <div class="chk" style="width:14px;height:14px;"></div>
+            <div class="t-text"><div class="t-title" style="font-size:10px;">Finir la maquette</div><span class="badge b-h" style="font-size:8px;">Haute</span></div>
+            <i class="ti ti-trash t-del" style="font-size:10px;" aria-hidden="true"></i>
+          </div>
+          <div class="dk-task" style="padding:8px 9px;margin-bottom:5px;">
+            <div class="chk" style="width:14px;height:14px;"></div>
+            <div class="t-text"><div class="t-title" style="font-size:10px;">Relire le cahier</div><span class="badge b-m" style="font-size:8px;">Moyenne</span></div>
+            <i class="ti ti-trash t-del" style="font-size:10px;" aria-hidden="true"></i>
+          </div>
+          <div class="dk-task done" style="padding:8px 9px;">
+            <div class="chk on" style="width:14px;height:14px;font-size:8px;">✓</div>
+            <div class="t-text"><div class="t-title done" style="font-size:10px;">Créer la BDD</div><span class="badge b-l" style="font-size:8px;">Basse</span></div>
+            <i class="ti ti-trash t-del" style="font-size:10px;" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="specs">
+    <div class="spec-card">
+      <div class="spec-title"><i class="ti ti-palette" aria-hidden="true"></i> Couleurs</div>
+      <div class="spec-row"><span class="sk">Fond page</span><span class="sv"><span class="dot" style="background:#0f0f13;border:1px solid rgba(255,255,255,0.2);"></span>#0f0f13</span></div>
+      <div class="spec-row"><span class="sk">Fond carte</span><span class="sv"><span class="dot" style="background:#1a1a24;border:1px solid rgba(255,255,255,0.2);"></span>#1a1a24</span></div>
+      <div class="spec-row"><span class="sk">Violet principal</span><span class="sv"><span class="dot" style="background:#7c71ff;"></span>#7c71ff</span></div>
+      <div class="spec-row"><span class="sk">Priorité haute</span><span class="sv"><span class="dot" style="background:#ff5e5e;"></span>#ff5e5e</span></div>
+      <div class="spec-row"><span class="sk">Priorité moyenne</span><span class="sv"><span class="dot" style="background:#ffb347;"></span>#ffb347</span></div>
+      <div class="spec-row"><span class="sk">Priorité basse</span><span class="sv"><span class="dot" style="background:#4dca8f;"></span>#4dca8f</span></div>
+    </div>
+
+    <div class="spec-card">
+      <div class="spec-title"><i class="ti ti-typography" aria-hidden="true"></i> Typographie & espacements</div>
+      <div class="spec-row"><span class="sk">Police</span><span class="sv">Segoe UI</span></div>
+      <div class="spec-row"><span class="sk">Titre app</span><span class="sv">26px / gras</span></div>
+      <div class="spec-row"><span class="sk">Titre tâche</span><span class="sv">14px / moyen</span></div>
+      <div class="spec-row"><span class="sk">Badge priorité</span><span class="sv">11px / gras</span></div>
+      <div class="spec-row"><span class="sk">Arrondi carte</span><span class="sv">12px</span></div>
+      <div class="spec-row"><span class="sk">Arrondi bouton</span><span class="sv">8px</span></div>
+      <div class="spec-row"><span class="sk">Max-width</span><span class="sv">700px</span></div>
+    </div>
+
+    <div class="spec-card">
+      <div class="spec-title"><i class="ti ti-components" aria-hidden="true"></i> Composants React</div>
+      <div class="comp-grid">
+        <div class="comp-pill"><div class="cp-name">App</div><div class="cp-desc">données + logique</div></div>
+        <div class="comp-pill"><div class="cp-name">Header</div><div class="cp-desc">titre + compteur</div></div>
+        <div class="comp-pill"><div class="cp-name">TaskInput</div><div class="cp-desc">formulaire ajout</div></div>
+        <div class="comp-pill"><div class="cp-name">TaskItem</div><div class="cp-desc">une tâche</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="spec-row"><span class="sk">useState</span><span class="sv">tâches + filtre</span></div>
+        <div class="spec-row"><span class="sk">useEffect</span><span class="sv">chargement initial</span></div>
+        <div class="spec-row"><span class="sk">fetch()</span><span class="sv">appels vers PHP</span></div>
+      </div>
+    </div>
+
+    <div class="spec-card">
+      <div class="spec-title"><i class="ti ti-arrows-right" aria-hidden="true"></i> Comment ça marche</div>
+      <div class="flow">
+        <div class="flow-step"><i class="ti ti-browser" aria-hidden="true"></i> index.html</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><i class="ti ti-brand-react" aria-hidden="true"></i> React (CDN)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><i class="ti ti-file-code" aria-hidden="true"></i> api.php</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><i class="ti ti-database" aria-hidden="true"></i> MySQL</div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="spec-row"><span class="sk">Serveur Node.js</span><span class="sv">sert les fichiers</span></div>
+        <div class="spec-row"><span class="sk">PHP</span><span class="sv">lit / écrit en BDD</span></div>
+        <div class="spec-row"><span class="sk">Breakpoint mobile</span><span class="sv">600px</span></div>
+      </div>
+    </div>
+  </div>
+</div>
