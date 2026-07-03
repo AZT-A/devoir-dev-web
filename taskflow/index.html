@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- React chargé directement depuis internet, pas besoin de npm -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel transforme le JSX dans le navigateur directement -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+
+  <!-- React va injecter l'application ici -->
+  <div id="root"></div>
+
+  <!-- type="text/babel" pour que Babel transforme le JSX -->
+  <script type="text/babel">
+
+    // URL de l'API PHP (tourne sur XAMPP)
+    const API = 'http://localhost/taskflow/api.php'
+
+    // =====================
+    // COMPOSANT : Header
+    // Affiche le titre et le compteur de tâches restantes
+    // =====================
+    function Header({ count }) {
+      return (
+        <header className="app-header">
+          <div className="header-inner">
+            <h1 className="app-title">Task<span>Flow</span></h1>
+            <p className="task-counter">
+              {count === 0 ? 'Toutes les tâches sont terminées 🎉' : `${count} tâche${count > 1 ? 's' : ''} restante${count > 1 ? 's' : ''}`}
+            </p>
+          </div>
+        </header>
+      )
+    }
+
+    // =====================
+    // COMPOSANT : TaskInput
+    // Formulaire pour ajouter une nouvelle tâche
+    // =====================
+    function TaskInput({ onAdd }) {
+      // State local : le texte tapé et la priorité choisie
+      const [title, setTitle]       = React.useState('')
+      const [priority, setPriority] = React.useState('medium')
+
+      function handleSubmit(e) {
+        e.preventDefault()             // empêche le rechargement de la page
+        if (!title.trim()) return      // on ne fait rien si le champ est vide
+        onAdd(title, priority)         // on envoie les données au composant parent
+        setTitle('')                   // on vide le champ
+      }
+
+      return (
+        <div className="task-input-section">
+          <form onSubmit={handleSubmit}>
+            <div className="input-row">
+              <input
+                type="text"
+                className="task-text-input"
+                placeholder="Nouvelle tâche..."
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                maxLength={80}
+              />
+              <select
+                className="priority-select"
+                value={priority}
+                onChange={e => setPriority(e.target.value)}
+              >
+                <option value="high">🔴 Haute</option>
+                <option value="medium">🟡 Moyenne</option>
+                <option value="low">🟢 Basse</option>
+              </select>
+              <button type="submit" className="add-button">+ Ajouter</button>
+            </div>
+          </form>
+        </div>
+      )
+    }
+
+    // =====================
+    // COMPOSANT : TaskItem
+    // Représente une seule tâche dans la liste
+    // =====================
+    function TaskItem({ task, onToggle, onDelete }) {
+      // On associe chaque priorité à son style CSS et son label
+      const badges = {
+        high:   { cls: 'badge-high',   label: '🔴 Haute' },
+        medium: { cls: 'badge-medium', label: '🟡 Moyenne' },
+        low:    { cls: 'badge-low',    label: '🟢 Basse' },
+      }
+      const badge = badges[task.priority] || badges.medium
+
+      return (
+        <li className={`task-item ${task.completed == 1 ? 'completed' : ''}`}>
+
+          {/* Bouton pour cocher/décocher la tâche */}
+          <button
+            className={`task-checkbox ${task.completed == 1 ? 'checked' : ''}`}
+            onClick={() => onToggle(task.id, task.completed)}
+          >
+            {task.completed == 1 ? '✓' : ''}
+          </button>
+
+          {/* Texte et badge de priorité */}
+          <div className="task-content">
+            <p className={`task-title ${task.completed == 1 ? 'completed' : ''}`}>
+              {task.title}
+            </p>
+            <span className={`priority-badge ${badge.cls}`}>{badge.label}</span>
+          </div>
+
+          {/* Bouton supprimer */}
+          <button className="delete-btn" onClick={() => onDelete(task.id)}>
+            🗑
+          </button>
+
+        </li>
+      )
+    }
+
+    // =====================
+    // COMPOSANT : App (composant principal)
+    // Contient toutes les données et la logique
+    // =====================
+    function App() {
+      const [tasks, setTasks]   = React.useState([])  // tableau des tâches
+      const [filter, setFilter] = React.useState('all') // filtre actif
+
+      // useEffect : se déclenche une seule fois au démarrage
+      // Charge les tâches depuis l'API PHP
+      React.useEffect(() => {
+        fetch(API)
+          .then(res => res.json())
+          .then(data => setTasks(data))
+          .catch(err => console.error('Erreur chargement:', err))
+      }, []) // [] = exécuté une seule fois
+
+      // --- Ajouter une tâche ---
+      async function addTask(title, priority) {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, priority })
+        })
+        const newTask = await res.json()
+        setTasks([newTask, ...tasks]) // on ajoute au début du tableau
+      }
+
+      // --- Cocher / décocher une tâche ---
+      async function toggleTask(id, currentCompleted) {
+        const newCompleted = currentCompleted == 1 ? 0 : 1
+        await fetch(`${API}?id=${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ completed: newCompleted })
+        })
+        // Mise à jour locale sans refaire un fetch
+        setTasks(tasks.map(t => t.id == id ? { ...t, completed: newCompleted } : t))
+      }
+
+      // --- Supprimer une tâche ---
+      async function deleteTask(id) {
+        await fetch(`${API}?id=${id}`, { method: 'DELETE' })
+        setTasks(tasks.filter(t => t.id != id))
+      }
+
+      // --- Filtrage des tâches selon le bouton actif ---
+      const filteredTasks = tasks.filter(t => {
+        if (filter === 'active')    return t.completed == 0
+        if (filter === 'completed') return t.completed == 1
+        return true
+      })
+
+      // Compteur pour le header
+      const remaining = tasks.filter(t => t.completed == 0).length
+
+      return (
+        <>
+          <Header count={remaining} />
+
+          <div className="app-container">
+            <TaskInput onAdd={addTask} />
+
+            {/* Boutons de filtre */}
+            <nav className="filter-bar">
+              {[
+                { value: 'all',       label: `Toutes (${tasks.length})` },
+                { value: 'active',    label: `En cours (${tasks.filter(t => t.completed == 0).length})` },
+                { value: 'completed', label: `Terminées (${tasks.filter(t => t.completed == 1).length})` },
+              ].map(f => (
+                <button
+                  key={f.value}
+                  className={`filter-btn ${filter === f.value ? 'active' : ''}`}
+                  onClick={() => setFilter(f.value)}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </nav>
+
+            {/* Liste des tâches */}
+            {filteredTasks.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">✅</div>
+                <p>Aucune tâche ici. Profites-en !</p>
+              </div>
+            ) : (
+              <ul className="task-list">
+                {filteredTasks.map(task => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    onToggle={toggleTask}
+                    onDelete={deleteTask}
+                  />
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
+      )
+    }
+
+    // On monte l'application dans le div#root
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />)
+
+  </script>
+</body>
+</html>
